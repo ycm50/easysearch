@@ -1,7 +1,7 @@
 import os  
 import tkinter as tk  
 from tkinter import filedialog, messagebox  
-  
+import send2trash
 class FileSearcherApp:  
     def __init__(self, root):  
         self.root = root  
@@ -21,6 +21,9 @@ class FileSearcherApp:
         search_button.pack(pady=5)  
   
         open_button = tk.Button(self.root, text="打开选中的文件", command=self.open_selected_file)  
+        open_button.pack(pady=5)  
+        
+        open_button = tk.Button(self.root, text="删除选中的文件", command=self.del_selected_file)  
         open_button.pack(pady=5)  
   
     def search_files_with_char(self):  
@@ -64,7 +67,17 @@ class FileSearcherApp:
                 messagebox.showerror("错误", f"文件不存在: {path_to_open}")  
         else:  
             messagebox.showerror("错误", "无法解析文件名")
-  
+    def del_selected_file(self):
+        selected_index = self.listbox_files.curselection()  
+        if not selected_index:  
+            messagebox.showerror("错误", "请选择要删除的文件")  
+            return  
+        for index in selected_index:
+            selected_item = self.listbox_files.get(index)  
+            parts = selected_item.split('、')[1]  
+            path_to_del = os.path.join(os.getcwd(), parts)  
+            send2trash.send2trash(path_to_del)
+            self.listbox_files.delete(index)
 def main():  
     root = tk.Tk()  
     app = FileSearcherApp(root)  
